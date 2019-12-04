@@ -127,7 +127,7 @@ function BurstCheck($_player){
 #カードを引く
 ######################################
 #ボタンが押された処理
-if(isset($_POST['draw'])) {
+if(isset($_GET['draw'])) {
     echo "<br>"."player ドロー"."<br>";
     $player[] = [$deck[0][0],$deck[0][1],$deck[0][2]];
     array_shift($deck);  //配列の先頭を削除
@@ -153,7 +153,7 @@ function StandCheck($playerStand1,$playerStand2){
 }
 
 #ボタンが押された処理
-if(isset($_POST['stand'])) {
+if(isset($_GET['stand'])) {
     echo "<br>"."player スタンド";
     $playerStand1 = true;
     //$isGameEnd = StandCheck($playerStand1,$playerStand2);
@@ -163,7 +163,5 @@ if(isset($_POST['stand'])) {
 }
 
 ?>
-<form action="index.php" method="post">
-    <input type="submit" name="draw" value="Player ドロー" />
-    <input type="submit" name="stand" value="Player スタンド" />
-</form>
+<li><a href="?draw">Hit</a></li>
+<li><a href="?stand">Stand</a></li>
