@@ -28,8 +28,17 @@ for ($i=0; $i < 2; $i++) {
 }
 */
 
-#デッキ作成
-for ($i=0; $i < 52; $i++) {
+session_start();
+
+$_SESSION['isGameEnd'] = false;    //true 終了 false 継続
+$_SESSION['nowPlayer'] = 0;        //現在のプレイヤー 0 player 1 enemy
+$_SESSION['deckCnt'] = 52;         //デッキ枚数
+$_SESSION['deck'] = $deck;
+
+######################################
+#デッキ構築
+######################################
+for ($i=0; $i < $deckCnt; $i++) {
   for ($j=0; $j < 4; $j++) {
 
     #柄の区別
@@ -57,20 +66,19 @@ for ($i=0; $i < 52; $i++) {
     $deck[] = [$suit,$i%13,$score];
   }
 }
-$deckCnt = 52;
 
 #デッキの中身を表示
 function ShowDeck($deckCnt,$deck){
   for($i=0;$i < $deckCnt;$i++){
     for ($j=0; $j < 3; $j++) {
-      //echo $deck[$i][$j]."\n";
+      echo $deck[$i][$j]."\n";
     }
-    //echo '<br>';
+    echo '<br>';
   }
 }
 
+#手札を表示
 function ShowHands($player){
-  echo "手札を確認します"."<br>";
   echo "枚数:".sizeof($player)."<br>";
   for($i=0;$i<sizeof($player);$i++){
     echo "suit :".$player[$i][0]."\n";
@@ -78,57 +86,84 @@ function ShowHands($player){
     echo "num  :".$player[$i][2]."\n";
     echo "<br>";
   }
-
 }
-
 
 #デッキをシャッフル
 
-#プレイヤー1にカードを配布
+######################################
+#カード配布
+######################################
 #1枚目ドロー
-$player1[] = [$deck[0][0],$deck[0][1],$deck[0][2]];
+$player[] = [$deck[0][0],$deck[0][1],$deck[0][2]];
 array_shift($deck);  //配列の先頭を削除
 $deckCnt--;
-ShowDeck($deckCnt,$deck);
 
 #2枚目ドロー
-$player1[] = [$deck[0][0],$deck[0][1],$deck[0][2]];
-array_shift($deck);  //配列の先頭を削除
+$player[] = [$deck[0][0],$deck[0][1],$deck[0][2]];
+array_shift($deck);
 $deckCnt--;
-ShowDeck($deckCnt,$deck);
 
-#プレイヤー2にカードを配布
-#1枚目ドロー
-$player2[] = [$deck[0][0],$deck[0][1],$deck[0][2]];
-array_shift($deck);  //配列の先頭を削除
-$deckCnt--;
-ShowDeck($deckCnt,$deck);
-
-#2枚目ドロー
-$player2[] = [$deck[0][0],$deck[0][1],$deck[0][2]];
-array_shift($deck);  //配列の先頭を削除
-$deckCnt--;
-ShowDeck($deckCnt,$deck);
+#デッキ参照(deblug)
+//ShowDeck($deckCnt,$deck);
 
 #手札参照
-ShowHands($player1);
-ShowHands($player2);
+ShowHands($player);
 
-$isGameEnd = false;
-$nowPlayer = 1;   //現在のプレイヤー 0と1
+######################################
+#ゲーム内処理
+######################################
+#バースト確認
+function BurstCheck($_player){
+  $total = 0;
+  for($i=0;$i<sizeof($_player);$i++){
+    $total += $_player[$i][1];
+  }
+  if(1){
 
-#ゲーム
-while ($isGameEnd == false) {
-
-  #ターンチェンジ
-  if($nowPlayer == 1){$nowPlayer = 1;}
-  else{$nowPlayer = 0;}
-  echo "<br>"."ターンを変更しました"."<br>";
-
-  echo "<br>"."カードを引きますか"."<br>";
-  
-$isGameEnd = true;
+  }
 }
 
+######################################
+#カードを引く
+######################################
+#ボタンが押された処理
+if(isset($_POST['draw'])) {
+    echo "<br>"."player ドロー"."<br>";
+    $player[] = [$deck[0][0],$deck[0][1],$deck[0][2]];
+    array_shift($deck);  //配列の先頭を削除
+    $deckCnt--;
+
+    //BurstCheck($player);
+    ShowHands($player);
+    $nowPlayer = 1;
+}
+
+######################################
+#スタンド
+######################################
+$playerStand1 = false;
+
+#両者スタンド
+function StandCheck($playerStand1,$playerStand2){
+  if($playerStand1 == true && $playerStand2 == true){
+    echo "ゲーム終了";
+    return true;
+  }
+  return false;
+}
+
+#ボタンが押された処理
+if(isset($_POST['stand'])) {
+    echo "<br>"."player スタンド";
+    $playerStand1 = true;
+    //$isGameEnd = StandCheck($playerStand1,$playerStand2);
+    if($isGameEnd == false){
+      //$nowPlayer = TurnChange($nowPlayer);
+    }
+}
 
 ?>
+<form action="index.php" method="post">
+    <input type="submit" name="draw" value="Player ドロー" />
+    <input type="submit" name="stand" value="Player スタンド" />
+</form>
