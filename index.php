@@ -182,8 +182,13 @@ echo "<br>";
 #################
 echo "【E手札】SCORE:";
 $score = HandScore($enemy);
-echo $score."<br>";
 
+if(isset($_GET['stand']) || $isPlayerBurst == true || $isEnemyBurst == true){
+      echo $score."<br>";
+}
+else{
+      echo " ?"."<br>";
+}
 
 //バーストしているか確認
 if(BurstCheck($enemy) == true){
@@ -199,7 +204,13 @@ if($isEnemyStand == true){
 //手札の中身を表示
 //if($isGameEnd == true){
   foreach($enemy as $deck){
-    echo $deck['num']."　　";
+    if(isset($_GET['stand']) || $isPlayerBurst == true || $isEnemyBurst == true){
+          echo $deck['num']."　　";
+    }
+    else{
+          echo "■"." 　";
+    }
+
   }
 //}
 
