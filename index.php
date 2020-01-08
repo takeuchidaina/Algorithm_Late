@@ -34,6 +34,13 @@ function InitDeck(){
     //シャッフル
     shuffle($deck);
 
+    //foreach($suits as $deck['suit']){
+        //for($i=1;$i<=13;$i++){
+          //echo $deck[$i]['suit'];
+          //echo $deck[$i]['num']." ";
+        //}
+    //}
+
     return $deck;
 }
 
@@ -70,6 +77,17 @@ function BurstCheck($_someOne){
 #################
 #初期化
 #################
+
+//初起動
+if(!isset($_GET['reset']) && !isset($_GET['deck'])){
+  $deck = InitDeck();               //デッキの生成
+  $_SESSION['deck'] = $deck;
+  $player[] = array_shift($deck);   //プレイヤー1枚目ドロー
+  $player[] = array_shift($deck);   //プレイヤー2枚目ドロー
+  $enemy[] = array_shift($deck);    //敵1枚目ドロー
+  $enemy[] = array_shift($deck);    //敵2枚目ドロー
+}
+
 if(!isset($_GET['reset'])){
     if(isset($_SESSION['deck']))         $deck  = $_SESSION['deck'];
     if(isset($_SESSION['player']))       $player = $_SESSION['player'];
@@ -81,27 +99,7 @@ if(isset($_GET['reset'])){
   $player[] = array_shift($deck);   //プレイヤー2枚目ドロー
   $enemy[] = array_shift($deck);    //敵1枚目ドロー
   $enemy[] = array_shift($deck);    //敵2枚目ドロー
-
-  //$deck  = $_SESSION['deck'];
-  //$player = $_SESSION['player'];
-  //$enemy    = $_SESSION['enemy'];
 }
-//リセットされていないなら
-else{
-  $deck = InitDeck();               //デッキの生成
-  $player[] = array_shift($deck);   //プレイヤー1枚目ドロー
-  $player[] = array_shift($deck);   //プレイヤー2枚目ドロー
-  $enemy[] = array_shift($deck);    //敵1枚目ドロー
-  $enemy[] = array_shift($deck);    //敵2枚目ドロー
-
-  $deck  = $_SESSION['deck'];
-  $player = $_SESSION['player'];
-  $enemy    = $_SESSION['enemy'];
-}
-
-$_SESSION['deck']  = $deck;
-$_SESSION['player'] = $player;
-$_SESSION['enemy'] = $enemy;
 
 #################
 #リンク処理
@@ -156,20 +154,22 @@ $_SESSION['enemy'] = $enemy;
 #################
 #プレイヤーの状況
 #################
-echo "【P手札】SCORE:";
-$score = HandScore($player);
-echo $score."<br>";
+echo "【P手札】";
 
 //バーストしているか確認
 if(BurstCheck($player) == true){
-  echo "BURST<br>";
+  echo "BURST";
   $isPlayerBurst = true;
 }
 
 //確定しているか表示
 if($isPlayerStand == true){
-  echo "STAND<br>";
+  echo "STAND";
 }
+
+echo "<br>SCORE:";
+$score = HandScore($player);
+echo $score."<br>";
 
 //手札の中身を表示
 foreach($player as $deck){
@@ -180,25 +180,26 @@ echo "<br>";
 #################
 #エネミーの状況
 #################
-echo "【E手札】SCORE:";
-$score = HandScore($enemy);
-
-if(isset($_GET['stand']) || $isPlayerBurst == true || $isEnemyBurst == true){
-      echo $score."<br>";
-}
-else{
-      echo " ?"."<br>";
-}
+echo "【E手札】";
 
 //バーストしているか確認
 if(BurstCheck($enemy) == true){
-  echo "BURST<br>";
+  echo "BURST";
   $isEnemyBurst = true;
 }
 
 //確定しているか表示
 if($isEnemyStand == true){
-  echo "STAND<br>";
+  echo "STAND";
+}
+
+echo "<br>"."SCORE:";
+if(isset($_GET['stand']) || $isPlayerBurst == true || $isEnemyBurst == true){
+      $score = HandScore($enemy);
+      echo $score."<br>";
+}
+else{
+      echo " ?"."<br>";
 }
 
 //手札の中身を表示
@@ -249,7 +250,6 @@ if($isPlayerStand == true && $isEnemyStand == true){
   }
   $isGameEnd = true;
 }
-
 
 ?>
 
